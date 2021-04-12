@@ -1,6 +1,18 @@
+const generateRandomString = function() {
+  const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += validChars[Math.floor(Math.random() * validChars.length)];
+  }
+  return result;
+};
+
+
 const express = require('express');
 const app = express();
 const PORT = 8080; //default port 8080
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set("view engine", "ejs");
 
@@ -18,8 +30,20 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  const short = generateRandomString();
+  urlDatabase[short] = req.body.longURL;
+  res.redirect(`/urls/${short}`);
+});
+
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const long = urlDatabase[req.params.shortURL];
+  res.redirect(long);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
