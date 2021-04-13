@@ -23,7 +23,7 @@
       </div>
       <div class="card-footer text-muted">
         <h2>Edit</h1>
-          <form class="form-inline" action="/urls" method="POST" style="justify-content: center;">
+          <form class="form-inline" action="/urls/<%= shortURL %>/edit" method="POST" style="justify-content: center;">
             <div class="form-group mb-2">
               <label for="newURL">New URL:</label>
               <input class="form-control" type="text" name="newURL" placeholder="http://"
