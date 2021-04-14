@@ -94,14 +94,12 @@ app.get("/register", (req, res) => {
 });
 
 //HELPER
-const validateUser = (id, email, password) => {
+const createUser = (id, email, password) => {
   if (!email || !password) {
     return { error: "Error! Either the email or password field was empty. Please try again.", data: null };
   }
-  for (const id in users) {
-    if (users[id].email === email) {
-      return { error: "Error! That email is already in use. Please try again", data: null };
-    }
+  if (findUser(email)) {
+    return { error: "Error! That email is already in use. Please try again", data: null };
   }
 
   users[id] = { id, email, password };
@@ -111,7 +109,7 @@ const validateUser = (id, email, password) => {
 app.post("/register", (req, res) => {
   const id = generateRandomString();
   const { email, password } = req.body;
-  const result = validateUser(id, email, password);
+  const result = createUser(id, email, password);
 
   if (result.error) {
     res.statusCode = 400;
