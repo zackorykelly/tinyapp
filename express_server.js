@@ -46,7 +46,6 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
   const short = generateRandomString();
   urlDatabase[short] = req.body.longURL;
   res.redirect(`/urls/${short}`);
@@ -58,16 +57,29 @@ app.get("/login", (req, res) => {
 });
 
 //HELPER
-// const validateUser = (email, password) => {
-//   for (const id in users) {
-
-//   })
-// };
+const findUser = (email) => {
+  for (const id in users) {
+    if (users[id].email === email) {
+      return id;
+    }
+  }
+  return null;
+};
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const result = validateUser(email, password);
-  res.cookie("username", req.body.username);
+  const id = findUser(email);
+
+  if (!id) {
+    res.statusCode = 403;
+    return res.send("Error! That email is invalid. Please try again.");
+  }
+  if (password !== users[id].password) {
+    res.statusCode = 403;
+    return res.send("Error! That password is invalid. Please try again.");
+  }
+
+  res.cookie("user_id", id);
   res.redirect("/urls");
 });
 
@@ -88,7 +100,6 @@ const validateUser = (id, email, password) => {
   }
   for (const id in users) {
     if (users[id].email === email) {
-      console.log('hello');
       return { error: "Error! That email is already in use. Please try again", data: null };
     }
   }
