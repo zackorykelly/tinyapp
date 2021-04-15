@@ -1,23 +1,9 @@
-//HELPER
-const generateRandomString = function() {
-  const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let result = '';
-  for (let i = 0; i < 6; i++) {
-    result += validChars[Math.floor(Math.random() * validChars.length)];
-  }
-
-  if (users[result] || urlDatabase[result]) {
-    return generateRandomString();
-  }
-  return result;
-};
-
-
 const express = require('express');
 const app = express();
 const PORT = 8080; //default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -34,6 +20,20 @@ const users = {
     email: "user@example.com",
     password: "7890"
   }
+};
+
+//HELPER
+const generateRandomString = function() {
+  const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += validChars[Math.floor(Math.random() * validChars.length)];
+  }
+
+  if (users[result] || urlDatabase[result]) {
+    return generateRandomString();
+  }
+  return result;
 };
 
 app.get("/", (req, res) => {
@@ -85,7 +85,7 @@ app.post("/login", (req, res) => {
     res.statusCode = 403;
     return res.send("Error! That email is invalid. Please try again.");
   }
-  if (password !== users[id].password) {
+  if (!bcrypt.compareSync(password, users[id].password)) {
     res.statusCode = 403;
     return res.send("Error! That password is invalid. Please try again.");
   }
@@ -113,7 +113,7 @@ const createUser = (id, email, password) => {
     return { error: "Error! That email is already in use. Please try again", data: null };
   }
 
-  users[id] = { id, email, password };
+  users[id] = { id, email, password: bcrypt.hashSync(password, 10) };
   return { error: null, data: { id, email, password } };
 };
 
