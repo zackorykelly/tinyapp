@@ -152,12 +152,18 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  const postOwner = urlDatabase[req.params.shortURL].userID;
+  if (req.cookies["user_id"] === postOwner) {
+    delete urlDatabase[req.params.shortURL];
+  }
   res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-  urlDatabase[req.params.shortURL].longURL = req.body.newURL;
+  const postOwner = urlDatabase[req.params.shortURL].userID;
+  if (req.cookies["user_id"] === postOwner) {
+    urlDatabase[req.params.shortURL].longURL = req.body.newURL;
+  }
   res.redirect("/urls");
 });
 
