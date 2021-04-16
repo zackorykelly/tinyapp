@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 
-//HELPER
+//HELPER: Get the id for a given email, or null if not existing. Used in createUser and login.
 const findUser = (email, database) => {
   for (const id in database) {
     if (database[id].email === email) {
@@ -10,7 +10,7 @@ const findUser = (email, database) => {
   return null;
 };
 
-//HELPER
+//HELPER: Used for making ids for users and URLs.
 const generateRandomString = function(users, urlDatabase) {
   const validChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let result = '';
@@ -18,13 +18,14 @@ const generateRandomString = function(users, urlDatabase) {
     result += validChars[Math.floor(Math.random() * validChars.length)];
   }
 
+  //If duplicate random string, re-run function.
   if (users[result] || urlDatabase[result]) {
     return generateRandomString();
   }
   return result;
 };
 
-//HELPER
+//HELPER: Filter database to only 1 user's URLs, used for index page.
 const getURLs = (userID, database) => {
   const result = {};
   for (const url in database) {
@@ -35,7 +36,7 @@ const getURLs = (userID, database) => {
   return result;
 };
 
-//HELPER
+//HELPER: Checks for errors in registration.
 const createUser = (id, email, password, database) => {
   if (!email || !password) {
     return { error: "Error! Either the email or password field was empty. Please try again.", data: null };
