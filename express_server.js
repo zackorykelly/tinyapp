@@ -24,6 +24,7 @@ const users = {
 };
 
 app.get("/", (req, res) => {
+  //Nothing at root, redirect depending on user status
   if (!req.session["user_id"]) {
     return res.redirect('/login');
   }
@@ -48,6 +49,9 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+  if (req.session["user_id"]) {
+    res.redirect("/urls");
+  }
   const templateVars = { user: users[req.session["user_id"]] };
   res.render("urls_login", templateVars);
 });
@@ -56,15 +60,10 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const id = findUser(email, users);
 
-  if (!id) {
+  if (!id || !bcrypt.compareSync(password, users[id].password)) {
     res.statusCode = 403;
-    return res.send("Error! That email is invalid. Please try again.");
+    return res.send("Error! That email or password is invalid. Please try again.");
   }
-  if (!bcrypt.compareSync(password, users[id].password)) {
-    res.statusCode = 403;
-    return res.send("Error! That password is invalid. Please try again.");
-  }
-
   req.session["user_id"] = id;
   res.redirect("/urls");
 });
@@ -75,6 +74,9 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
+  if (req.session["user_id"]) {
+    res.redirect("/urls");
+  }
   const templateVars = { user: users[req.session["user_id"]] };
   res.render("urls_registration", templateVars);
 });
@@ -129,10 +131,10 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
-  const postOwner = urlDatabase[req.params.shortURL].userID;
+app.post("/urls/:id/delete", (req, res) => {
+  const postOwner = urlDatabase[req.params.id].userID;
   if (req.session["user_id"] === postOwner) {
-    delete urlDatabase[req.params.shortURL];
+    delete urlDatabase[req.params.id];
   }
   res.redirect("/urls");
 });
