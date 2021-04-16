@@ -54,7 +54,7 @@ app.post("/urls", (req, res) => {
 
 app.get("/login", (req, res) => {
   if (req.session["user_id"]) {
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
 
   const templateVars = { user: users[req.session["user_id"]] };
@@ -82,7 +82,7 @@ app.post("/logout", (req, res) => {
 
 app.get("/register", (req, res) => {
   if (req.session["user_id"]) {
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
   const templateVars = { user: users[req.session["user_id"]] };
   res.render("urls_registration", templateVars);
@@ -105,7 +105,7 @@ app.post("/register", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   if (!req.session["user_id"]) {
-    res.redirect("/login");
+    return res.redirect("/login");
   }
   const templateVars = { user: users[req.session["user_id"]] };
   res.render("urls_new", templateVars);
