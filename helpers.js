@@ -25,6 +25,17 @@ const generateRandomString = function(users, urlDatabase) {
 };
 
 //HELPER
+const getURLs = (userID, database) => {
+  const result = {};
+  for (const url in database) {
+    if (database[url].userID === userID) {
+      result[url] = database[url];
+    }
+  }
+  return result;
+};
+
+//HELPER
 const createUser = (id, email, password, database) => {
   if (!email || !password) {
     return { error: "Error! Either the email or password field was empty. Please try again.", data: null };
@@ -40,5 +51,6 @@ const createUser = (id, email, password, database) => {
 module.exports = {
   findUser,
   createUser,
+  getURLs,
   generateRandomString
 };
