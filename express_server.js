@@ -141,6 +141,13 @@ app.get("/urls/:id", (req, res) => {
 //Edit request
 app.post("/urls/:id", (req, res) => {
   const postOwner = urlDatabase[req.params.id].userID;
+
+  //Make sure URL begins with http or https to prevent errors accessing it.
+  if (req.body.newURL.substring(0, 7) !== "http://" && req.body.newURL.substring(0, 8) !== "https://") {
+    res.statusCode = 400;
+    return res.send("Error! URL must begin with http:// or https://");
+  }
+
   //Only process the edit if owner is logged in
   if (req.session["user_id"] === postOwner) {
     urlDatabase[req.params.id].longURL = req.body.newURL;
