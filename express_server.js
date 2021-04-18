@@ -48,7 +48,7 @@ app.post("/urls", (req, res) => {
 
   //Make sure URL begins with http or https to prevent errors accessing it.
   if (req.body.longURL.substring(0, 7) !== "http://" && req.body.longURL.substring(0, 8) !== "https://") {
-    res.statusCode = 403;
+    res.statusCode = 400;
     return res.send("Error! URL must begin with http:// or https://");
   }
 
