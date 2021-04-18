@@ -46,6 +46,12 @@ app.post("/urls", (req, res) => {
     return res.send("Error! You must be logged in to create URLs.");
   }
 
+  //Make sure URL begins with http or https to prevent errors accessing it.
+  if (req.body.longURL.substring(0, 7) !== "http://" && req.body.longURL.substring(0, 8) !== "https://") {
+    res.statusCode = 403;
+    return res.send("Error! URL must begin with http:// or https://");
+  }
+
   const short = generateRandomString(users, urlDatabase);
   //Store current user with URL for permissions purposes
   urlDatabase[short] = { longURL: req.body.longURL, userID: req.session["user_id"] };
@@ -77,7 +83,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie('session');
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 app.get("/register", (req, res) => {
