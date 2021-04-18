@@ -13,27 +13,27 @@ const findUser = (email, database) => {
 //HELPER: Used for making ids for users and URLs.
 const generateRandomString = function(users, urlDatabase) {
   const validChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let result = '';
+  let randomString = '';
   for (let i = 0; i < 6; i++) {
-    result += validChars[Math.floor(Math.random() * validChars.length)];
+    randomString += validChars[Math.floor(Math.random() * validChars.length)];
   }
 
   //If duplicate random string, re-run function.
-  if (users[result] || urlDatabase[result]) {
+  if (users[randomString] || urlDatabase[randomString]) {
     return generateRandomString();
   }
-  return result;
+  return randomString;
 };
 
 //HELPER: Filter database to only 1 user's URLs, used for index page.
 const getURLs = (userID, database) => {
-  const result = {};
+  const userURLs = {};
   for (const url in database) {
     if (database[url].userID === userID) {
-      result[url] = database[url];
+      userURLs[url] = database[url];
     }
   }
-  return result;
+  return userURLs;
 };
 
 //HELPER: Checks for errors in registration.
